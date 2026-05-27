@@ -95,6 +95,23 @@ export function ResearchTab() {
         document.body.removeChild(link);
     };
 
+    const downloadSpecificCSV = (metricKey: string, metricLabel: string) => {
+        if (results.length === 0) return;
+        const xLabel = indepVar === 'inputMass' ? 'Kapasitas (ton/hari)' : 'Rasio Semen (%)';
+        const headers = [xLabel, metricLabel];
+        const rows = results.map(r => [r.xValue, r[metricKey]]);
+        const csvContent = "data:text/csv;charset=utf-8," 
+            + headers.join(",") + "\n" 
+            + rows.map(e => e.join(",")).join("\n");
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `penelitian_${metricKey}_vs_${indepVar}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <div className="space-y-6">
             <div className="rounded-xl border bg-white p-6 shadow-sm">
@@ -172,6 +189,7 @@ export function ResearchTab() {
                         <div className="rounded-xl border bg-white p-6 shadow-sm">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="font-semibold text-gray-800 text-sm">Grafik NPV vs {indepVar === 'inputMass' ? 'Kapasitas' : 'Rasio Semen'}</h3>
+                                <button onClick={() => downloadSpecificCSV('npv', 'NPV (Rp)')} className="text-xs text-blue-600 hover:underline">Download CSV</button>
                             </div>
                             <div className="h-[250px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
@@ -191,6 +209,7 @@ export function ResearchTab() {
                         <div className="rounded-xl border bg-white p-6 shadow-sm">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="font-semibold text-gray-800 text-sm">Grafik IRR vs {indepVar === 'inputMass' ? 'Kapasitas' : 'Rasio Semen'}</h3>
+                                <button onClick={() => downloadSpecificCSV('irr', 'IRR (%)')} className="text-xs text-blue-600 hover:underline">Download CSV</button>
                             </div>
                             <div className="h-[250px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
@@ -210,6 +229,7 @@ export function ResearchTab() {
                         <div className="rounded-xl border bg-white p-6 shadow-sm">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="font-semibold text-gray-800 text-sm">Grafik Laba Kotor vs {indepVar === 'inputMass' ? 'Kapasitas' : 'Rasio Semen'}</h3>
+                                <button onClick={() => downloadSpecificCSV('grossProfit', 'Laba Kotor (Rp)')} className="text-xs text-blue-600 hover:underline">Download CSV</button>
                             </div>
                             <div className="h-[250px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
@@ -229,6 +249,7 @@ export function ResearchTab() {
                         <div className="rounded-xl border bg-white p-6 shadow-sm">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="font-semibold text-gray-800 text-sm">Grafik Kuat Tekan vs {indepVar === 'inputMass' ? 'Kapasitas' : 'Rasio Semen'}</h3>
+                                <button onClick={() => downloadSpecificCSV('compressiveStrength', 'Kuat Tekan (MPa)')} className="text-xs text-blue-600 hover:underline">Download CSV</button>
                             </div>
                             <div className="h-[250px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
@@ -248,6 +269,7 @@ export function ResearchTab() {
                         <div className="rounded-xl border bg-white p-6 shadow-sm">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="font-semibold text-gray-800 text-sm">Kebutuhan Kapur vs {indepVar === 'inputMass' ? 'Kapasitas' : 'Rasio Semen'}</h3>
+                                <button onClick={() => downloadSpecificCSV('limeRequirement', 'Kebutuhan Kapur (ton/hari)')} className="text-xs text-blue-600 hover:underline">Download CSV</button>
                             </div>
                             <div className="h-[250px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
@@ -267,6 +289,7 @@ export function ResearchTab() {
                         <div className="rounded-xl border bg-white p-6 shadow-sm">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="font-semibold text-gray-800 text-sm">Produksi Batako vs {indepVar === 'inputMass' ? 'Kapasitas' : 'Rasio Semen'}</h3>
+                                <button onClick={() => downloadSpecificCSV('productOutput', 'Produksi (ton/hari)')} className="text-xs text-blue-600 hover:underline">Download CSV</button>
                             </div>
                             <div className="h-[250px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
