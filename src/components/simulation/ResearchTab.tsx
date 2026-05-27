@@ -167,12 +167,13 @@ export function ResearchTab() {
 
             {results.length > 0 && (
                 <>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {/* 1. NPV Graph */}
                         <div className="rounded-xl border bg-white p-6 shadow-sm">
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="font-semibold text-gray-800">Grafik NPV vs {indepVar === 'inputMass' ? 'Kapasitas' : 'Rasio Semen'}</h3>
+                                <h3 className="font-semibold text-gray-800 text-sm">Grafik NPV vs {indepVar === 'inputMass' ? 'Kapasitas' : 'Rasio Semen'}</h3>
                             </div>
-                            <div className="h-[300px] w-full">
+                            <div className="h-[250px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <LineChart data={results} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
                                         <CartesianGrid strokeDasharray="3 3" />
@@ -185,11 +186,51 @@ export function ResearchTab() {
                                 </ResponsiveContainer>
                             </div>
                         </div>
+
+                        {/* 2. IRR Graph */}
                         <div className="rounded-xl border bg-white p-6 shadow-sm">
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="font-semibold text-gray-800">Grafik Kuat Tekan vs {indepVar === 'inputMass' ? 'Kapasitas' : 'Rasio Semen'}</h3>
+                                <h3 className="font-semibold text-gray-800 text-sm">Grafik IRR vs {indepVar === 'inputMass' ? 'Kapasitas' : 'Rasio Semen'}</h3>
                             </div>
-                            <div className="h-[300px] w-full">
+                            <div className="h-[250px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={results} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="xValue" />
+                                        <YAxis tickFormatter={(val) => `${val.toFixed(1)}%`} />
+                                        <Tooltip formatter={(value: any) => `${Number(value).toFixed(2)}%`} />
+                                        <Legend />
+                                        <Line type="monotone" dataKey="irr" stroke="#ea580c" name="IRR (%)" strokeWidth={3} />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+
+                        {/* 3. Gross Profit Graph */}
+                        <div className="rounded-xl border bg-white p-6 shadow-sm">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="font-semibold text-gray-800 text-sm">Grafik Laba Kotor vs {indepVar === 'inputMass' ? 'Kapasitas' : 'Rasio Semen'}</h3>
+                            </div>
+                            <div className="h-[250px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={results} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="xValue" />
+                                        <YAxis tickFormatter={(val) => `Rp ${(val/1e6).toFixed(0)}Jt`} />
+                                        <Tooltip formatter={(value: any) => `Rp ${(Number(value)/1e6).toFixed(2)} Juta`} />
+                                        <Legend />
+                                        <Line type="monotone" dataKey="grossProfit" stroke="#ca8a04" name="Laba Kotor/Thn" strokeWidth={3} />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+
+                        {/* 4. Kuat Tekan Graph */}
+                        <div className="rounded-xl border bg-white p-6 shadow-sm">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="font-semibold text-gray-800 text-sm">Grafik Kuat Tekan vs {indepVar === 'inputMass' ? 'Kapasitas' : 'Rasio Semen'}</h3>
+                            </div>
+                            <div className="h-[250px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <LineChart data={results} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
                                         <CartesianGrid strokeDasharray="3 3" />
@@ -198,6 +239,44 @@ export function ResearchTab() {
                                         <Tooltip formatter={(value: any) => `${Number(value).toFixed(2)} MPa`} />
                                         <Legend />
                                         <Line type="monotone" dataKey="compressiveStrength" stroke="#2563eb" name="Kuat Tekan (MPa)" strokeWidth={3} />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+
+                        {/* 5. Lime Requirement Graph */}
+                        <div className="rounded-xl border bg-white p-6 shadow-sm">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="font-semibold text-gray-800 text-sm">Kebutuhan Kapur vs {indepVar === 'inputMass' ? 'Kapasitas' : 'Rasio Semen'}</h3>
+                            </div>
+                            <div className="h-[250px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={results} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="xValue" />
+                                        <YAxis />
+                                        <Tooltip formatter={(value: any) => `${Number(value).toFixed(2)} ton/hari`} />
+                                        <Legend />
+                                        <Line type="monotone" dataKey="limeRequirement" stroke="#db2777" name="Kapur (t/hari)" strokeWidth={3} />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+
+                        {/* 6. Product Output Graph */}
+                        <div className="rounded-xl border bg-white p-6 shadow-sm">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="font-semibold text-gray-800 text-sm">Produksi Batako vs {indepVar === 'inputMass' ? 'Kapasitas' : 'Rasio Semen'}</h3>
+                            </div>
+                            <div className="h-[250px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={results} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="xValue" />
+                                        <YAxis />
+                                        <Tooltip formatter={(value: any) => `${Number(value).toFixed(0)} ton/hari`} />
+                                        <Legend />
+                                        <Line type="monotone" dataKey="productOutput" stroke="#4f46e5" name="Produk (t/hari)" strokeWidth={3} />
                                     </LineChart>
                                 </ResponsiveContainer>
                             </div>
