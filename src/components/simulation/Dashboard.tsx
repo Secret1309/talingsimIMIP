@@ -6,6 +6,7 @@ import { DEFAULT_TAILING, TAILING_TYPES } from "@/lib/simulation/constants";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { AreaChart, Area, BarChart, Bar, ReferenceLine } from 'recharts';
 import { ReactorScene } from "./ReactorScene";
+import { ResearchTab } from "./ResearchTab";
 
 const formatRp = (value: number): string => {
     if (Math.abs(value) >= 1e12) return `Rp ${(value / 1e12).toFixed(2)} T`;
@@ -15,7 +16,7 @@ const formatRp = (value: number): string => {
 };
 
 export function Dashboard() {
-    const [activeTab, setActiveTab] = useState<'visual' | 'results' | 'economy'>('results');
+    const [activeTab, setActiveTab] = useState<'visual' | 'results' | 'economy' | 'research'>('results');
     const { massBalanceResult, economicResults, inputMass, tailingType } = useSimulationStore();
 
     const COLORS = ['#374151', '#6b7280', '#9ca3af', '#d1d5db', '#d97706', '#0e7490'];
@@ -73,6 +74,12 @@ export function Dashboard() {
                     className={`whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-colors lg:px-6 lg:py-4 ${activeTab === 'economy' ? 'border-gray-800 text-gray-800' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
                 >
                     Dashboard Ekonomi
+                </button>
+                <button
+                    onClick={() => setActiveTab('research')}
+                    className={`whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-colors lg:px-6 lg:py-4 ${activeTab === 'research' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-blue-600'}`}
+                >
+                    Mode Penelitian
                 </button>
             </div>
 
@@ -457,6 +464,13 @@ export function Dashboard() {
                 {activeTab === 'visual' && (
                     <div className="h-full w-full rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                         <ReactorScene />
+                    </div>
+                )}
+
+                {/* ====== RESEARCH TAB ====== */}
+                {activeTab === 'research' && (
+                    <div className="w-full">
+                        <ResearchTab />
                     </div>
                 )}
             </div>

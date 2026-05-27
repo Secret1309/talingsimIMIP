@@ -22,7 +22,7 @@ export default function TeamPage() {
             img: "/assets/pp_dzaky.jpg"
         },
         {
-            name: "Dean",
+            name: "Gabriela Deangela Sitanggang",
             role: "Chemical Engineering Lead Researcher",
             uni: "Institut Teknologi Bandung (ITB)",
             major: "Chemical Engineering - FTI",

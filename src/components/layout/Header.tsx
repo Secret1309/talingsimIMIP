@@ -25,9 +25,9 @@ export function Header() {
                     <Image
                         src="/LogoIMIP.png"
                         alt="Logo IMIP"
-                        width={180}
-                        height={55}
-                        className="h-[36px] w-auto lg:h-[40px]"
+                        width={240}
+                        height={75}
+                        className="h-[48px] w-auto lg:h-[60px]"
                     />
                 </div>
 

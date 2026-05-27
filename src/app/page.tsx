@@ -5,24 +5,33 @@ import { ArrowRight, Factory, LineChart, Layers, Users } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen relative overflow-hidden bg-gray-900">
       <Header />
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-white py-20 lg:py-28">
-        <div className="absolute inset-0 bg-[radial-gradient(#d1d5db_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
+      {/* Parallax / Sticky Background (Placeholder for Video) */}
+      <div className="fixed inset-0 -z-10 h-screen w-full">
+        {/* Fallback image (can be replaced with <video> tag later) */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/assets/bg_imip.jpg')" }}
+        />
+        {/* Dark overlay to ensure text readability */}
+        <div className="absolute inset-0 bg-black/60 bg-gradient-to-t from-gray-900 via-transparent to-transparent"></div>
+      </div>
 
+      {/* Hero Section */}
+      <section className="relative z-10 py-20 lg:py-28">
         <div className="container relative mx-auto px-4 text-center">
           <div className="mx-auto max-w-4xl space-y-6">
             <span className="inline-block rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-800">
               LKTI HLHS PT IMIP 2026 - Subtema Tailing
             </span>
 
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl lg:text-5xl leading-tight">
+            <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl lg:text-5xl leading-tight drop-shadow-md">
               TailingSIM: Decision Support System untuk Upcycling Tailing HPAL Nikel Laterit PT IMIP
             </h2>
 
-            <p className="mx-auto max-w-3xl text-lg text-gray-600 leading-relaxed">
+            <p className="mx-auto max-w-3xl text-lg text-gray-200 leading-relaxed drop-shadow">
               Platform simulasi web real-time untuk menghitung stoikiometri netralisasi asam
               bebas (H₂SO₄ ±30 gpl), neraca massa hematit, kelayakan finansial (NPV/IRR),
               dan rekomendasi resep batako/paving block SNI dari limbah <strong>tailing HPAL nikel
