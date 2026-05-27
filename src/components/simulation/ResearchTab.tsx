@@ -44,11 +44,19 @@ export function ResearchTab() {
                 curingTempC: 25
             });
 
-            // Tambahkan variasi natural (saintifik) untuk mensimulasikan efisiensi dunia nyata
-            // Efisiensi pencampuran sedikit berfluktuasi dan menurun di skala besar
-            const strengthVariation = 1 + (Math.sin(v / 40) * 0.015) - (currentMass / 5000) * 0.02; 
-            // Fluktuasi NPV karena dinamika maintenance dan supply chain (skala ekonomis yang tidak linear sempurna)
-            const econVariation = 1 + (Math.cos(v / 80) * 0.02) + (Math.sin(v / 200) * 0.01);
+            // METODOLOGI SAINTIFIK: 
+            // 1. Efisiensi Pencampuran: Skala mixer yang lebih besar (kapasitas tinggi) cenderung memiliki 
+            //    zona mati (dead zones) yang menurunkan homogenitas secara logaritmik.
+            //    Ditambah noise sinusoidal untuk simulasi variasi batch lapangan.
+            const strengthVariation = 1 - (0.07 * Math.log10((currentMass / 20) + 1)) + (Math.sin(v / 40) * 0.01); 
+            
+            // 2. Hukum Skala Ekonomi (Economies of Scale) & Diminishing Returns: 
+            //    Pada kapasitas kecil, margin keuntungan tipis karena fixed cost membebani. 
+            //    Pada kapasitas menengah, margin naik secara eksponensial (kurva cembung ke atas).
+            //    Pada kapasitas raksasa, margin mulai tergerus (penalti saturasi pasar & logistik).
+            const economyOfScale = Math.pow(currentMass / 50, 0.2); // Melengkung naik (eksponensial)
+            const marketSaturationPenalty = Math.pow(currentMass / 1000, 2) * 0.3; // Melengkung turun di kapasitas ekstrem
+            const econVariation = economyOfScale - marketSaturationPenalty + (Math.cos(v / 50) * 0.02);
 
             newResults.push({
                 xValue: v,
