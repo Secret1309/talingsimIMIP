@@ -1,9 +1,9 @@
 // ============================================================
-// TAILINGSIM - Konstanta Simulasi HPAL Nikel Laterit PT IMIP
-// Kompetisi LKTI HLHS PT IMIP 2026
-// 1. Muhammad Ilham Saripul Milah (Metallurgical Lead Researcher & Full-Stack Developer | Teknik Metalurgi ITB, FTTM) 
-// 2. Dzaky Zahy Rabbani ( Numerical Modelling & Developer | Oseanografi ITB, FITB)
-// 3. Dean (Chemistry Engineering Lead Researcher | Teknik Kimia ITB, FTI)
+// TAILINGSIM - Simulation Constants for HPAL Nickel Laterite Tailing
+// LKTI HLHS PT IMIP 2026 Competition
+// 1. Muhammad Ilham Saripul Milah (Lead Researcher & Full-Stack Developer | Metallurgical Engineering ITB, FTTM)
+// 2. Dzaky Zahy Rabbani (Numerical Modelling & Developer | Oceanography ITB, FITB)
+// 3. Dean (Chemical Engineering Lead Researcher | Chemical Engineering ITB, FTI)
 // ============================================================
 
 // --- TAILING TYPES ---
@@ -66,8 +66,8 @@ export const DEFAULT_TAILING: Record<TailingType, TailingComposition> = {
             '(<0.1%) karena sudah terekstraksi. Mengandung logam berat sisa ' +
             '(Cr, As) yang harus dienkapsulasi.',
 
-        preTreatmentCostPerTon: 55_000,
-        // Biaya lebih tinggi karena perlu netralisasi asam + stabilisasi logam berat
+        preTreatmentCostPerTon: 35_000,
+        // Biaya pra-perlakuan (stabilisasi logam berat, tidak termasuk netralisasi asam yang sudah dihitung terpisah)
 
         biogeopolymerProductionImpact:
             'Tantangan utama: netralisasi H₂SO₄ sisa (±30 gpl) menggunakan Ca(OH)₂. ' +
@@ -145,9 +145,13 @@ export const ECONOMIC_DEFAULTS = {
     },
 
     // === OPEX COMPONENTS ===
-    LABOR_COST_PER_YEAR: 2_160_000_000, // Rp 2.16 M/tahun (UMK Morowali 2024 ~Rp 3.2 jt/bulan × 20 orang)
-    OPEX_FIXED_PERCENT: 0.045,          // 4.5% CAPEX (pemeliharaan + asuransi + lingkungan)
-    ELECTRICITY_COST_KWH: 1_444,        // Rp/kWh (Tarif Industri PLN Golongan I-3 Tegangan Menengah)
+    // Labor cost scales sub-linearly with capacity using 0.25 power law
+    // Ref capacity: 50 ton/hari = 10 orang (UMK Morowali 2024 ~Rp 3.6 jt/bulan)
+    LABOR_COST_REF_YEAR: 432_000_000,   // Rp 432 jt/tahun (10 orang × Rp 3.6 jt × 12 bulan)
+    LABOR_REF_CAPACITY: 50,              // ton/hari (kapasitas referensi untuk labor scaling)
+    LABOR_SCALING_FACTOR: 0.25,          // Power law exponent (sub-linear: doubling capacity +19% labor)
+    OPEX_FIXED_PERCENT: 0.04,            // 4% CAPEX (pemeliharaan + asuransi + lingkungan)
+    ELECTRICITY_COST_KWH: 1_444,         // Rp/kWh (Tarif Industri PLN Golongan I-3 Tegangan Menengah)
 
     // === BIAYA BAHAN BAKU NETRALISASI ===
     // Parameter baru khas HPAL - tidak ada di versi tailing emas/tembaga
@@ -162,14 +166,17 @@ export const ECONOMIC_DEFAULTS = {
 
     // === HARGA JUAL PRODUK (B2B Kawasan IMIP) ===
     // Produk dikonsumsi internal untuk infrastruktur kawasan industri & perumahan karyawan
-    PRODUCT_PRICE_STANDARD: 380_000,  // Rp 380.000/ton (Batako Berongga, SNI 03-0349-1989)
-    // ~Rp 3.400/buah batako ukuran 40×20×10 cm (harga grosir kawasan industri)
-    PRODUCT_PRICE_PREMIUM: 680_000,   // Rp 680.000/ton (Paving Block, SNI 03-0691-1996)
-    // ~Rp 2.100/buah paving block 21×10.5×6 cm (harga grosir kawasan industri)
+    // Ref: Survey harga material konstruksi Sulawesi Tengah 2024-2025
+    PRODUCT_PRICE_STANDARD: 550_000,  // Rp 550.000/ton (Batako Berongga, SNI 03-0349-1989)
+    // ~Rp 4.950/buah batako 40x20x10cm (harga grosir kawasan industri Sulawesi)
+    PRODUCT_PRICE_PREMIUM: 850_000,   // Rp 850.000/ton (Paving Block, SNI 03-0691-1996)
+    // ~Rp 2.635/buah paving block 21x10.5x6cm (harga grosir proyek infrastruktur IMIP)
 
     // === TIPPING FEE ===
     // PT IMIP membayar biaya pengelolaan limbah ke operator pabrik upcycling
-    TIPPING_FEE_PER_TON: 75_000, // Rp 75.000/ton (estimasi, lebih tinggi dari Au/Cu karena sifat B3)
+    // Referensi: Biaya disposal limbah B3 di Indonesia Rp 500.000-2.000.000/ton (PP 22/2021)
+    // Tipping fee jauh di bawah biaya disposal konvensional = insentif kuat bagi IMIP
+    TIPPING_FEE_PER_TON: 150_000, // Rp 150.000/ton (masih 70-90% lebih murah dari disposal konvensional B3)
 
     // === PARAMETER FINANSIAL ===
     DISCOUNT_RATE: 0.12,   // 12% WACC (lebih tinggi dari standar karena risiko operasi kawasan industri)

@@ -91,8 +91,10 @@ export const calculateEconomics = (input: EconomicInput): EconomicResult => {
     // Energy cost: uses energy from mass balance
     const annualEnergyCost = massBalance.annualEnergyKWh * ED.ELECTRICITY_COST_KWH;
 
-    // Labor
-    const annualLaborCost = ED.LABOR_COST_PER_YEAR;
+    // Labor (scales sub-linearly with capacity)
+    const laborScaleRatio = inputMassTonPerDay / ED.LABOR_REF_CAPACITY;
+    const laborScaleFactor = Math.pow(laborScaleRatio, ED.LABOR_SCALING_FACTOR);
+    const annualLaborCost = ED.LABOR_COST_REF_YEAR * laborScaleFactor;
 
     // Maintenance (% of CAPEX)
     const annualMaintenanceCost = capexTotal * ED.OPEX_FIXED_PERCENT;

@@ -23,10 +23,10 @@ export default function EmpowermentPage() {
             <Header />
 
             {/* Hero Section */}
-            <div className="bg-teal-900 px-4 py-16 text-center text-white sm:px-6 lg:px-8">
+            <div className="bg-green-800 px-4 py-16 text-center text-white sm:px-6 lg:px-8">
                 <div className="mx-auto max-w-3xl">
                     <h1 className="text-3xl font-extrabold sm:text-4xl md:text-5xl">Kalkulator BUMDes</h1>
-                    <p className="mt-4 text-lg text-teal-100">
+                    <p className="mt-4 text-lg text-green-100">
                         Platform panduan praktis untuk mengubah limbah tailing HPAL nikel laterit menjadi produk batako & paving block bernilai ekonomi. Dirancang khusus untuk BUMDes kawasan Morowali.
                     </p>
                 </div>
@@ -48,7 +48,7 @@ export default function EmpowermentPage() {
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Status Netralisasi Tailing</label>
                                     <select
-                                        className="w-full rounded-lg border border-gray-300 p-2.5 text-sm focus:border-teal-500 focus:ring-teal-500"
+                                        className="w-full rounded-lg border border-gray-300 p-2.5 text-sm focus:border-green-600 focus:ring-green-600"
                                         value={tailingType}
                                         onChange={(e) => {
                                             setTailingType(e.target.value as TailingType);
@@ -127,7 +127,7 @@ export default function EmpowermentPage() {
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Pilih Produk & Cetakan (SNI)</label>
                                     <select
-                                        className="w-full rounded-lg border border-gray-300 p-2.5 text-sm focus:border-teal-500 focus:ring-teal-500 mb-6"
+                                        className="w-full rounded-lg border border-gray-300 p-2.5 text-sm focus:border-green-600 focus:ring-green-600 mb-6"
                                         value={productType}
                                         onChange={(e) => {
                                             setProductType(e.target.value as any);
@@ -141,7 +141,7 @@ export default function EmpowermentPage() {
                                 <div className="border-t border-gray-100 pt-4">
                                     <div className="flex justify-between mb-2">
                                         <label className="text-sm font-medium text-gray-700">Berat Tailing HPAL (Kg)</label>
-                                        <span className="text-sm font-bold text-teal-700">{inputKg} Kg</span>
+                                        <span className="text-sm font-bold text-green-700">{inputKg} Kg</span>
                                     </div>
                                     <input
                                         type="range" min="10" max="500" step="10"
@@ -150,7 +150,7 @@ export default function EmpowermentPage() {
                                             setInputKg(Number(e.target.value));
                                             setResult(null);
                                         }}
-                                        className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-teal-600"
+                                        className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-green-600"
                                     />
                                     <div className="flex justify-between text-xs text-gray-400 mt-1">
                                         <span>10 Kg (Skala Uji)</span>
@@ -159,7 +159,7 @@ export default function EmpowermentPage() {
                                 </div>
                                 <button
                                     onClick={handleCalculate}
-                                    className="w-full rounded-lg bg-teal-600 px-4 py-3 text-sm font-bold text-white shadow-md transition-colors hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 flex items-center justify-center gap-2"
+                                    className="w-full rounded-lg bg-green-700 px-4 py-3 text-sm font-bold text-white shadow-md transition-colors hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 flex items-center justify-center gap-2"
                                 >
                                     <Beaker className="h-4 w-4" /> Hitung Resep & Biaya
                                 </button>
@@ -173,15 +173,15 @@ export default function EmpowermentPage() {
                             <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
                                 {/* Recipe Instructions - UPDATED: Kapur + Semen + Air */}
                                 <div className="overflow-hidden rounded-2xl bg-white shadow-sm border border-gray-200">
-                                    <div className="bg-teal-50 px-6 py-4 border-b border-teal-100">
-                                        <h2 className="text-lg font-bold text-teal-900">🛠️ Resep Praktis ({result.tailingInputKg} Kg Tailing HPAL)</h2>
-                                        <p className="text-sm text-teal-700">Untuk Produk Konstruksi SNI - Semen-Pozolan HPAL</p>
+                                    <div className="bg-green-50 px-6 py-4 border-b border-green-100">
+                                        <h2 className="text-lg font-bold text-green-900">🛠️ Resep Praktis ({result.tailingInputKg} Kg Tailing HPAL)</h2>
+                                        <p className="text-sm text-green-700">Untuk Produk Konstruksi SNI - Semen-Pozolan HPAL</p>
                                     </div>
                                     <div className="p-6">
                                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                                             <div className="rounded-xl bg-gray-50 p-4 border border-gray-100 text-center flex flex-col items-center justify-center">
                                                 <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Tailing HPAL</div>
-                                                <div className="text-xl sm:text-2xl font-black text-teal-600 leading-none">{result.tailingKarung} <span className="text-xs font-medium text-gray-600 block sm:inline mt-1 sm:mt-0">Karung</span></div>
+                                                <div className="text-xl sm:text-2xl font-black text-green-700 leading-none">{result.tailingKarung} <span className="text-xs font-medium text-gray-600 block sm:inline mt-1 sm:mt-0">Karung</span></div>
                                                 <div className="mt-2 text-xs text-gray-400">~{result.tailingInputKg} Kg</div>
                                             </div>
                                             <div className="rounded-xl bg-amber-50 p-4 border border-amber-200 text-center flex flex-col items-center justify-center">
@@ -191,7 +191,7 @@ export default function EmpowermentPage() {
                                             </div>
                                             <div className="rounded-xl bg-gray-50 p-4 border border-gray-100 text-center flex flex-col items-center justify-center">
                                                 <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Semen Portland</div>
-                                                <div className="text-xl sm:text-2xl font-black text-teal-600 leading-none">{result.cementSak} <span className="text-xs font-medium text-gray-600 block sm:inline mt-1 sm:mt-0">Sak</span></div>
+                                                <div className="text-xl sm:text-2xl font-black text-green-700 leading-none">{result.cementSak} <span className="text-xs font-medium text-gray-600 block sm:inline mt-1 sm:mt-0">Sak</span></div>
                                                 <div className="mt-2 text-xs text-gray-400">sak 40kg (~{result.cementKg} Kg)</div>
                                             </div>
                                             <div className="rounded-xl bg-blue-50 p-4 border border-blue-200 text-center flex flex-col items-center justify-center">
@@ -212,7 +212,7 @@ export default function EmpowermentPage() {
                                                 const [title, desc] = step.split(' - ');
                                                 return (
                                                     <li key={idx} className="flex gap-3">
-                                                        <CheckCircle2 className="h-5 w-5 text-teal-500 flex-shrink-0 mt-0.5" />
+                                                        <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
                                                         <div>
                                                             <strong className="text-gray-800 text-sm block">{title}</strong>
                                                             <span className="text-gray-600 text-sm">{desc}</span>
@@ -231,10 +231,10 @@ export default function EmpowermentPage() {
                                     </div>
                                     <div className="p-6">
                                         <div className="flex flex-col sm:flex-row gap-6 mb-6">
-                                            <div className="flex-1 rounded-xl bg-gradient-to-br from-teal-500 to-teal-700 p-6 text-white shadow-md">
-                                                <div className="text-teal-100 text-sm font-medium mb-1">Estimasi Produksi {result.productName}</div>
+                                            <div className="flex-1 rounded-xl bg-gradient-to-br from-green-600 to-green-800 p-6 text-white shadow-md">
+                                                <div className="text-green-100 text-sm font-medium mb-1">Estimasi Produksi {result.productName}</div>
                                                 <div className="text-4xl font-black flex items-baseline gap-2">~{result.estimatedBlocks} <span className="text-xl font-medium">Buah</span></div>
-                                                <div className="mt-2 text-xs text-teal-100 opacity-80">(Berdasarkan SNI, perkiraan {result.totalMixKg} Kg material)</div>
+                                                <div className="mt-2 text-xs text-green-100 opacity-80">(Berdasarkan SNI, perkiraan {result.totalMixKg} Kg material)</div>
                                             </div>
                                             <div className="flex-1 rounded-xl bg-white p-6 border border-gray-200 shadow-sm flex flex-col justify-center">
                                                 <div className="text-gray-500 text-xs font-medium uppercase tracking-wider mb-1">Total Biaya Bahan</div>

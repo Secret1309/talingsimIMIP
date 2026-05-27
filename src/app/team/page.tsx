@@ -1,7 +1,7 @@
 "use client";
 
 import { Header } from "@/components/layout/Header";
-import { ArrowLeft, User, GraduationCap, MapPin } from "lucide-react";
+import { ArrowLeft, GraduationCap, MapPin } from "lucide-react";
 import Link from 'next/link';
 import Image from "next/image";
 
@@ -18,14 +18,14 @@ export default function TeamPage() {
             name: "Dzaky Zahy Rabbani",
             role: "Numerical Modelling & Developer",
             uni: "Institut Teknologi Bandung (ITB)",
-            major: "Oseanografi - FITB",
+            major: "Oceanography - FITB",
             img: "/assets/pp_dzaky.jpg"
         },
         {
             name: "Dean",
-            role: "Chemistry Engineering Lead Researcher",
+            role: "Chemical Engineering Lead Researcher",
             uni: "Institut Teknologi Bandung (ITB)",
-            major: "Teknik Kimia - FTI",
+            major: "Chemical Engineering - FTI",
             img: "/assets/pp_dean.jpg"
         },
     ];
@@ -55,28 +55,19 @@ export default function TeamPage() {
                                         alt={res.name}
                                         fill
                                         className="object-cover transition-transform duration-500 group-hover:scale-105"
-                                        onError={(e) => {
-                                            // Fallback if image not found
-                                            const target = e.target as HTMLImageElement;
-                                            target.style.display = 'none';
-                                        }}
                                     />
-                                    {/* Fallback avatar */}
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <User className="h-20 w-20 text-gray-400" />
-                                    </div>
                                 </div>
                                 <div className="p-6">
                                     <h3 className="text-xl font-bold text-gray-900">{res.name}</h3>
-                                    <p className="mb-4 text-sm font-medium text-gray-600">{res.role}</p>
+                                    <p className="mb-4 text-sm font-medium text-green-700">{res.role}</p>
 
                                     <div className="space-y-2 text-sm text-gray-500">
                                         <div className="flex items-start gap-2">
-                                            <GraduationCap className="mt-0.5 h-4 w-4" />
+                                            <GraduationCap className="mt-0.5 h-4 w-4 shrink-0" />
                                             <span>{res.uni}</span>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <MapPin className="h-4 w-4" />
+                                            <MapPin className="h-4 w-4 shrink-0" />
                                             <span>{res.major}</span>
                                         </div>
                                     </div>
