@@ -8,18 +8,18 @@ import Image from "next/image";
 export default function TeamPage() {
     const researchers = [
         {
-            name: "Muhammad Ilham Saripul Milah",
-            role: "Lead Researcher & Full-Stack Developer",
-            uni: "Institut Teknologi Bandung (ITB)",
-            major: "Metallurgical Engineering - FTTM",
-            img: "/assets/pp_ilham.jpg"
-        },
-        {
             name: "Dzaky Zahy Rabbani",
             role: "Numerical Modelling & Developer",
             uni: "Institut Teknologi Bandung (ITB)",
             major: "Oceanography - FITB",
             img: "/assets/pp_dzaky.jpg"
+        },
+        {
+            name: "Muhammad Ilham Saripul Milah",
+            role: "Lead Researcher & Full-Stack Developer",
+            uni: "Institut Teknologi Bandung (ITB)",
+            major: "Metallurgical Engineering - FTTM",
+            img: "/assets/pp_ilham.jpg"
         },
         {
             name: "Gabriela Deangela Sitanggang",
