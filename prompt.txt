@@ -3,3 +3,8 @@ cek github, jika nyambung, tambahakn fitur ini di tab baru di simulasi :
 
 
 catatan jangan menghilangkan fitur 3d yang pabrik, buat di tab baru terpisah jangan sama
+
+----
+batako nya aku ingin agar si sectionnya jika on, maka si rangka titik titik batakonya masih ada, lalu dalammnya aku ingin bola bolanya padat terbentuk ke bentuuk balokknya, dedngan warna berbeda berbeda gitu agar telihat tercampur zat zat didalamnya, jangan sampai mengacaukan yang lain, lalu jangan ada bug toggle on of nya untuk yang section nya
+aku ingin yang label muncul diatas bataku nya itu ada toggle "X" nya agar bisa dihilangkan jika dibutuhkan
+lalu untuk yang grafik 3d  kuattekan, jadikan label yang tidka bergerak saja diatas legenda warna batako (kekuatan brick)

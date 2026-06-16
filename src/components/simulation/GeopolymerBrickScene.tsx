@@ -2,7 +2,7 @@
 
 import React, { useRef, useMemo, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Html, Environment, PerspectiveCamera, ContactShadows, RoundedBox } from "@react-three/drei";
+import { OrbitControls, Html, Environment, PerspectiveCamera, ContactShadows, RoundedBox, Edges } from "@react-three/drei";
 import * as THREE from "three";
 import { useSimulationStore } from "@/lib/store";
 
@@ -10,62 +10,53 @@ import { useSimulationStore } from "@/lib/store";
 
 /** Map compressive strength to a brick color gradient */
 function getBrickColor(strength: number): string {
-    if (strength >= 10) return "#6b5b4d"; // Dark brownish-grey (strong)
-    if (strength >= 7) return "#7d6e60";  // Medium
-    if (strength >= 4) return "#8f8073";  // Lighter
-    return "#a09385";                     // Light (weak)
+    if (strength >= 10) return "#6b5b4d";
+    if (strength >= 7) return "#7d6e60";
+    if (strength >= 4) return "#8f8073";
+    return "#a09385";
 }
 
-function getAggregateColor(strength: number): string {
-    if (strength >= 10) return "#4a3f35";
-    if (strength >= 7) return "#5c5046";
-    return "#6e6257";
-}
+// Colors representing the different substances mixed inside the brick
+const SUBSTANCE_COLORS = [
+    { color: "#8b7355", name: "Tailing HPAL" },       // brownish - tailing
+    { color: "#a0a0a0", name: "Semen Portland" },      // grey - cement
+    { color: "#c4b896", name: "Ca(OH)₂ Kapur" },      // yellowish - lime
+    { color: "#6b8e6b", name: "Geopolimer Gel" },      // greenish - geopolymer
+    { color: "#b0785a", name: "Agregat Halus" },       // reddish-brown - fine aggregate
+    { color: "#7a9cbc", name: "Gipsum CaSO₄" },       // bluish - gypsum byproduct
+];
 
 // --- Sub-Components ---
 
-/** Floating particle specs inside the brick cross-section to show tailing aggregate */
-function TailingParticles({ visible }: { visible: boolean }) {
-    const groupRef = useRef<THREE.Group>(null);
+/** Densely packed multi-colored spheres filling the brick shape */
+function InteriorParticles() {
+    const particles = useMemo(() => {
+        const BRICK_W = 1.95;
+        const BRICK_H = 0.95;
+        const BRICK_D = 0.50;
+        const result: { pos: [number, number, number]; size: number; colorIdx: number }[] = [];
 
-    const particles = useMemo(() =>
-        Array.from({ length: 40 }, (_, i) => ({
-            pos: [
-                (Math.random() - 0.5) * 1.6,
-                (Math.random() - 0.5) * 0.7,
-                (Math.random() - 0.5) * 0.35,
-            ] as [number, number, number],
-            size: 0.02 + Math.random() * 0.04,
-            phase: i * 0.3,
-        })),
-        []
-    );
-
-    useFrame(({ clock }) => {
-        if (!groupRef.current || !visible) return;
-        const t = clock.getElapsedTime();
-        groupRef.current.children.forEach((child, i) => {
-            const p = particles[i];
-            if (!p) return;
-            const mat = (child as THREE.Mesh).material as THREE.MeshStandardMaterial;
-            if (mat) {
-                mat.emissiveIntensity = 0.3 + 0.3 * Math.sin(t * 2 + p.phase);
-            }
-        });
-    });
-
-    if (!visible) return null;
+        // Generate a dense grid-ish distribution within the brick bounds
+        const count = 220;
+        for (let i = 0; i < count; i++) {
+            const x = (Math.random() - 0.5) * (BRICK_W - 0.08);
+            const y = (Math.random() - 0.5) * (BRICK_H - 0.08);
+            const z = (Math.random() - 0.5) * (BRICK_D - 0.08);
+            const size = 0.025 + Math.random() * 0.04;
+            const colorIdx = Math.floor(Math.random() * SUBSTANCE_COLORS.length);
+            result.push({ pos: [x, y, z], size, colorIdx });
+        }
+        return result;
+    }, []);
 
     return (
-        <group ref={groupRef}>
+        <group>
             {particles.map((p, i) => (
                 <mesh key={i} position={p.pos}>
                     <sphereGeometry args={[p.size, 8, 8]} />
                     <meshStandardMaterial
-                        color="#8b7355"
-                        emissive="#d4a574"
-                        emissiveIntensity={0.4}
-                        roughness={0.9}
+                        color={SUBSTANCE_COLORS[p.colorIdx].color}
+                        roughness={0.8}
                         metalness={0.1}
                     />
                 </mesh>
@@ -74,7 +65,7 @@ function TailingParticles({ visible }: { visible: boolean }) {
     );
 }
 
-/** The geopolymer brick with optional cross-section */
+/** The geopolymer brick — always rendered, visibility toggled cleanly */
 function GeopolymerBrick({
     showCrossSection,
     showLabels,
@@ -87,24 +78,17 @@ function GeopolymerBrick({
 
     const strength = massBalanceResult?.compressiveStrength ?? 0;
     const brickColor = getBrickColor(strength);
-    const aggregateColor = getAggregateColor(strength);
     const qualityGrade = massBalanceResult?.qualityGrade ?? "standar";
 
     // Brick dimensions (scaled from 390x190x100mm)
-    const BRICK_W = 1.95; // width (390/200)
-    const BRICK_H = 0.95; // height (190/200)
-    const BRICK_D = 0.50; // depth (100/200)
-
-    // Cross-section clipping
-    const clippingPlane = useMemo(
-        () => new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0),
-        []
-    );
+    const BRICK_W = 1.95;
+    const BRICK_H = 0.95;
+    const BRICK_D = 0.50;
 
     return (
         <group ref={groupRef}>
-            {/* === FULL BRICK (outer shell) === */}
-            {!showCrossSection && (
+            {/* === SOLID BRICK — shown when cross-section is OFF === */}
+            <group visible={!showCrossSection}>
                 <RoundedBox
                     args={[BRICK_W, BRICK_H, BRICK_D]}
                     radius={0.02}
@@ -120,85 +104,63 @@ function GeopolymerBrick({
                         clearcoatRoughness={0.8}
                     />
                 </RoundedBox>
-            )}
+            </group>
 
-            {/* === CROSS-SECTION VIEW === */}
-            {showCrossSection && (
-                <group>
-                    {/* Outer shell — clipped to show interior */}
-                    <mesh castShadow receiveShadow>
-                        <boxGeometry args={[BRICK_W, BRICK_H, BRICK_D]} />
-                        <meshPhysicalMaterial
-                            color={brickColor}
-                            roughness={0.85}
-                            metalness={0.05}
-                            side={THREE.DoubleSide}
-                            clippingPlanes={[clippingPlane]}
-                            clipShadows
-                        />
-                    </mesh>
+            {/* === CROSS-SECTION VIEW — shown when cross-section is ON === */}
+            <group visible={showCrossSection}>
+                {/* Wireframe outline — dotted edge lines showing brick shape */}
+                <mesh>
+                    <boxGeometry args={[BRICK_W, BRICK_H, BRICK_D]} />
+                    <meshBasicMaterial visible={false} />
+                    <Edges
+                        threshold={15}
+                        color="#6b7280"
+                        lineWidth={1}
+                    />
+                </mesh>
 
-                    {/* Inner cross-section face */}
-                    <mesh position={[0, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
-                        <planeGeometry args={[BRICK_D, BRICK_H]} />
-                        <meshStandardMaterial
-                            color={aggregateColor}
-                            roughness={0.95}
-                            metalness={0.0}
-                            side={THREE.DoubleSide}
-                        />
-                    </mesh>
+                {/* Semi-transparent shell so you can still see the brick outline */}
+                <mesh>
+                    <boxGeometry args={[BRICK_W, BRICK_H, BRICK_D]} />
+                    <meshPhysicalMaterial
+                        color={brickColor}
+                        transparent
+                        opacity={0.12}
+                        roughness={0.9}
+                        metalness={0.0}
+                        side={THREE.DoubleSide}
+                        depthWrite={false}
+                    />
+                </mesh>
 
-                    {/* Tailing aggregate particles visible in cross-section */}
-                    <TailingParticles visible={showCrossSection} />
+                {/* Densely packed multi-colored spheres filling the brick volume */}
+                <InteriorParticles />
 
-                    {/* Inner layer indicator — slightly darker ring */}
-                    <mesh position={[0.3, 0, 0]}>
-                        <boxGeometry args={[BRICK_W * 0.45, BRICK_H * 0.75, BRICK_D * 0.7]} />
-                        <meshStandardMaterial
-                            color={aggregateColor}
-                            roughness={0.95}
-                            transparent
-                            opacity={0.6}
-                            clippingPlanes={[clippingPlane]}
-                            clipShadows
-                        />
-                    </mesh>
+                {/* Cross-section labels */}
+                {showLabels && (
+                    <>
+                        <Html position={[0, BRICK_H / 2 + 0.18, 0]} center distanceFactor={5} zIndexRange={[100, 0]}>
+                            <div className="pointer-events-none select-none rounded-md bg-gray-900/80 px-2.5 py-1 text-[9px] font-bold text-white border border-gray-500/40 backdrop-blur-sm whitespace-nowrap">
+                                Komposisi Internal Batako
+                            </div>
+                        </Html>
+                    </>
+                )}
+            </group>
 
-                    {/* Cross-section labels */}
-                    {showLabels && (
-                        <>
-                            <Html position={[0.5, 0.25, 0.35]} center distanceFactor={5} zIndexRange={[100, 0]}>
-                                <div className="pointer-events-none select-none rounded-md bg-amber-900/80 px-2 py-1 text-[9px] font-bold text-amber-100 border border-amber-600/40 backdrop-blur-sm whitespace-nowrap">
-                                    Geopolimer Matrix
-                                </div>
-                            </Html>
-                            <Html position={[0.3, -0.2, 0.35]} center distanceFactor={5} zIndexRange={[100, 0]}>
-                                <div className="pointer-events-none select-none rounded-md bg-stone-800/80 px-2 py-1 text-[9px] font-bold text-stone-200 border border-stone-500/40 backdrop-blur-sm whitespace-nowrap">
-                                    Tailing HPAL Aggregate
-                                </div>
-                            </Html>
-                        </>
-                    )}
-                </group>
-            )}
-
-            {/* === DIMENSION LINES === */}
+            {/* === DIMENSION LINES — shown only on solid view === */}
             {showLabels && !showCrossSection && (
                 <>
-                    {/* Width label */}
                     <Html position={[0, -BRICK_H / 2 - 0.2, 0]} center distanceFactor={5} zIndexRange={[100, 0]}>
                         <div className="pointer-events-none select-none text-[8px] font-mono font-bold text-gray-500 whitespace-nowrap">
                             ← 390 mm →
                         </div>
                     </Html>
-                    {/* Height label */}
                     <Html position={[BRICK_W / 2 + 0.25, 0, 0]} center distanceFactor={5} zIndexRange={[100, 0]}>
                         <div className="pointer-events-none select-none text-[8px] font-mono font-bold text-gray-500 whitespace-nowrap" style={{ writingMode: 'vertical-rl' }}>
                             190 mm
                         </div>
                     </Html>
-                    {/* Depth label */}
                     <Html position={[0, BRICK_H / 2 + 0.15, BRICK_D / 2 + 0.15]} center distanceFactor={5} zIndexRange={[100, 0]}>
                         <div className="pointer-events-none select-none text-[8px] font-mono font-bold text-gray-500 whitespace-nowrap">
                             100 mm
@@ -306,78 +268,14 @@ function GroundPlane() {
     );
 }
 
-/** Strength meter visualization next to the brick */
-function StrengthMeter() {
-    const { massBalanceResult } = useSimulationStore();
-    const strength = massBalanceResult?.compressiveStrength ?? 0;
-
-    // SNI thresholds
-    const sniMin = 2.5; // SNI minimum for batako
-    const maxDisplay = 15;
-    const fillRatio = Math.min(strength / maxDisplay, 1);
-
-    const barRef = useRef<THREE.Mesh>(null);
-
-    useFrame(() => {
-        if (!barRef.current) return;
-        const targetScale = fillRatio > 0 ? fillRatio : 0.01;
-        barRef.current.scale.y += (targetScale - barRef.current.scale.y) * 0.05;
-        barRef.current.position.y = -0.6 + (targetScale * 1.2) / 2;
-    });
-
-    const barColor = strength >= 10 ? "#16a34a" : strength >= sniMin ? "#d97706" : "#dc2626";
-
-    return (
-        <group position={[1.8, 0, 0]}>
-            {/* Background bar */}
-            <mesh position={[0, 0, 0]}>
-                <boxGeometry args={[0.12, 1.2, 0.12]} />
-                <meshStandardMaterial color="#e5e7eb" roughness={0.9} />
-            </mesh>
-
-            {/* Filled bar */}
-            <mesh ref={barRef} position={[0, -0.6, 0.01]}>
-                <boxGeometry args={[0.12, 1.2, 0.12]} />
-                <meshStandardMaterial
-                    color={barColor}
-                    emissive={barColor}
-                    emissiveIntensity={0.3}
-                    roughness={0.7}
-                />
-            </mesh>
-
-            {/* SNI threshold line */}
-            <mesh position={[0, -0.6 + (sniMin / maxDisplay) * 1.2, 0.08]}>
-                <boxGeometry args={[0.2, 0.008, 0.01]} />
-                <meshStandardMaterial color="#dc2626" />
-            </mesh>
-
-            {/* Labels */}
-            <Html position={[0, 0.85, 0]} center distanceFactor={5} zIndexRange={[100, 0]}>
-                <div className="pointer-events-none select-none text-center">
-                    <div className="text-[8px] font-bold text-gray-500 uppercase tracking-wider">Kuat Tekan</div>
-                    <div className="text-[12px] font-mono font-black text-gray-800">
-                        {strength > 0 ? `${strength.toFixed(1)}` : '—'}
-                    </div>
-                    <div className="text-[8px] text-gray-500">MPa</div>
-                </div>
-            </Html>
-
-            <Html position={[0.25, -0.6 + (sniMin / maxDisplay) * 1.2, 0]} center distanceFactor={5} zIndexRange={[100, 0]}>
-                <div className="pointer-events-none select-none text-[7px] font-bold text-red-600 whitespace-nowrap">
-                    SNI Min
-                </div>
-            </Html>
-        </group>
-    );
-}
-
 // --- Main Exported Component ---
 
 export function GeopolymerBrickScene() {
     const [autoRotate, setAutoRotate] = useState(true);
     const [showCrossSection, setShowCrossSection] = useState(false);
     const [showLabels, setShowLabels] = useState(true);
+    const { massBalanceResult } = useSimulationStore();
+    const strength = massBalanceResult?.compressiveStrength ?? 0;
 
     return (
         <div className="relative h-full w-full overflow-hidden rounded-xl bg-gradient-to-br from-stone-100 via-gray-50 to-stone-200">
@@ -443,7 +341,6 @@ export function GeopolymerBrickScene() {
                         showCrossSection={showCrossSection}
                         showLabels={showLabels}
                     />
-                    <StrengthMeter />
                     <GroundPlane />
                 </React.Suspense>
 
@@ -458,8 +355,29 @@ export function GeopolymerBrickScene() {
                 />
             </Canvas>
 
-            {/* Legend */}
+            {/* Static Kuat Tekan label + Legend (bottom-right, stacked) */}
             <div className="absolute bottom-4 right-4 flex flex-col items-end gap-2 pointer-events-none">
+                {/* Kuat Tekan — static label above the legend */}
+                <div className="rounded-lg bg-white/90 p-3 text-xs shadow-sm backdrop-blur-sm border border-gray-300 pointer-events-auto text-center">
+                    <div className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Kuat Tekan</div>
+                    <div className="text-xl font-mono font-black text-gray-800">
+                        {strength > 0 ? strength.toFixed(1) : '—'}
+                    </div>
+                    <div className="text-[10px] text-gray-500">MPa</div>
+                    {strength > 0 && (
+                        <div className={`mt-1 rounded-full px-2 py-0.5 text-[9px] font-bold ${
+                            strength >= 10
+                                ? 'bg-green-100 text-green-700'
+                                : strength >= 2.5
+                                    ? 'bg-amber-100 text-amber-700'
+                                    : 'bg-red-100 text-red-700'
+                        }`}>
+                            {strength >= 10 ? '✓ Sangat Baik' : strength >= 2.5 ? '✓ Memenuhi SNI' : '✗ Bawah SNI'}
+                        </div>
+                    )}
+                </div>
+
+                {/* Kekuatan Brick Legend */}
                 <div className="rounded-lg bg-white/90 p-3 text-xs shadow-sm backdrop-blur-sm pointer-events-auto border border-gray-300">
                     <div className="mb-2 font-bold text-gray-700">Kekuatan Brick</div>
                     <div className="flex items-center gap-2 mb-1">
@@ -482,6 +400,19 @@ export function GeopolymerBrickScene() {
                         SNI Minimum: 2.5 MPa
                     </div>
                 </div>
+
+                {/* Substance color legend — visible when cross-section is on */}
+                {showCrossSection && (
+                    <div className="rounded-lg bg-white/90 p-3 text-xs shadow-sm backdrop-blur-sm pointer-events-auto border border-gray-300">
+                        <div className="mb-2 font-bold text-gray-700">Komposisi Zat</div>
+                        {SUBSTANCE_COLORS.map((s, i) => (
+                            <div key={i} className="flex items-center gap-2 mb-1 last:mb-0">
+                                <span className="block h-2 w-2 rounded-full" style={{ backgroundColor: s.color }}></span>
+                                <span>{s.name}</span>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             <div className="absolute bottom-4 left-4 rounded-lg bg-white/80 p-2 text-[10px] text-gray-500 backdrop-blur-sm pointer-events-none">
