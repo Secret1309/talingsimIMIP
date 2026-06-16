@@ -74,11 +74,10 @@ function GeopolymerBrick({
     showLabels: boolean;
 }) {
     const groupRef = useRef<THREE.Group>(null);
-    const { massBalanceResult, binderRatio } = useSimulationStore();
+    const { massBalanceResult } = useSimulationStore();
 
     const strength = massBalanceResult?.compressiveStrength ?? 0;
     const brickColor = getBrickColor(strength);
-    const qualityGrade = massBalanceResult?.qualityGrade ?? "standar";
 
     // Brick dimensions (scaled from 390x190x100mm)
     const BRICK_W = 1.95;
@@ -136,16 +135,7 @@ function GeopolymerBrick({
                 {/* Densely packed multi-colored spheres filling the brick volume */}
                 <InteriorParticles />
 
-                {/* Cross-section labels */}
-                {showLabels && (
-                    <>
-                        <Html position={[0, BRICK_H / 2 + 0.18, 0]} center distanceFactor={5} zIndexRange={[100, 0]}>
-                            <div className="pointer-events-none select-none rounded-md bg-gray-900/80 px-2.5 py-1 text-[9px] font-bold text-white border border-gray-500/40 backdrop-blur-sm whitespace-nowrap">
-                                Komposisi Internal Batako
-                            </div>
-                        </Html>
-                    </>
-                )}
+
             </group>
 
             {/* === DIMENSION LINES — shown only on solid view === */}
@@ -169,54 +159,7 @@ function GeopolymerBrick({
                 </>
             )}
 
-            {/* === MAIN INFO CARD === */}
-            {showLabels && (
-                <Html position={[0, BRICK_H / 2 + 0.65, 0]} center distanceFactor={5} zIndexRange={[100, 0]}>
-                    <div className="pointer-events-none select-none min-w-[180px] rounded-xl border border-gray-300/50 bg-white/90 p-3 shadow-xl backdrop-blur-md">
-                        <div className="flex items-center justify-between mb-2">
-                            <div className="text-[11px] font-bold text-gray-800">
-                                🧱 Batako Geopolimer
-                            </div>
-                            <span className={`rounded-full px-2 py-0.5 text-[8px] font-bold ${
-                                qualityGrade === 'premium'
-                                    ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                                    : 'bg-gray-100 text-gray-600 border border-gray-300'
-                            }`}>
-                                {qualityGrade === 'premium' ? '⭐ Premium' : 'Standar'}
-                            </span>
-                        </div>
-                        <div className="space-y-1">
-                            <div className="flex justify-between text-[9px]">
-                                <span className="text-gray-500">Kuat Tekan</span>
-                                <span className="font-mono font-bold text-gray-800">
-                                    {strength > 0 ? `${strength.toFixed(1)} MPa` : '— MPa'}
-                                </span>
-                            </div>
-                            <div className="flex justify-between text-[9px]">
-                                <span className="text-gray-500">Rasio Semen</span>
-                                <span className="font-mono font-bold text-gray-800">{binderRatio}%</span>
-                            </div>
-                            <div className="flex justify-between text-[9px]">
-                                <span className="text-gray-500">Dimensi SNI</span>
-                                <span className="font-mono font-bold text-gray-800">390×190×100 mm</span>
-                            </div>
-                            <div className="flex justify-between text-[9px]">
-                                <span className="text-gray-500">Output Harian</span>
-                                <span className="font-mono font-bold text-gray-800">
-                                    {massBalanceResult
-                                        ? `${massBalanceResult.dailyProductOutput.toFixed(1)} ton`
-                                        : '— ton'}
-                                </span>
-                            </div>
-                        </div>
-                        {!massBalanceResult && (
-                            <div className="mt-2 rounded-md bg-amber-50 border border-amber-200 px-2 py-1 text-[8px] text-amber-700 text-center">
-                                Jalankan simulasi untuk data lengkap
-                            </div>
-                        )}
-                    </div>
-                </Html>
-            )}
+
         </group>
     );
 }
@@ -274,8 +217,9 @@ export function GeopolymerBrickScene() {
     const [autoRotate, setAutoRotate] = useState(true);
     const [showCrossSection, setShowCrossSection] = useState(false);
     const [showLabels, setShowLabels] = useState(true);
-    const { massBalanceResult } = useSimulationStore();
+    const { massBalanceResult, binderRatio } = useSimulationStore();
     const strength = massBalanceResult?.compressiveStrength ?? 0;
+    const qualityGrade = massBalanceResult?.qualityGrade ?? "standar";
 
     return (
         <div className="relative h-full w-full overflow-hidden rounded-xl bg-gradient-to-br from-stone-100 via-gray-50 to-stone-200">
@@ -312,6 +256,62 @@ export function GeopolymerBrickScene() {
                     {showLabels ? '🏷️ Label: ON' : '🏷️ Label: OFF'}
                 </button>
             </div>
+
+            {/* Static Info Card — fixed on the left below toggles */}
+            <div className="absolute top-40 left-4 z-10 pointer-events-none">
+                <div className="min-w-[190px] rounded-xl border border-gray-300/50 bg-white/90 p-3 shadow-xl backdrop-blur-md pointer-events-auto">
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="text-[11px] font-bold text-gray-800">
+                            🧱 Batako Geopolimer
+                        </div>
+                        <span className={`rounded-full px-2 py-0.5 text-[8px] font-bold ${
+                            qualityGrade === 'premium'
+                                ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                                : 'bg-gray-100 text-gray-600 border border-gray-300'
+                        }`}>
+                            {qualityGrade === 'premium' ? '⭐ Premium' : 'Standar'}
+                        </span>
+                    </div>
+                    <div className="space-y-1">
+                        <div className="flex justify-between text-[9px]">
+                            <span className="text-gray-500">Kuat Tekan</span>
+                            <span className="font-mono font-bold text-gray-800">
+                                {strength > 0 ? `${strength.toFixed(1)} MPa` : '— MPa'}
+                            </span>
+                        </div>
+                        <div className="flex justify-between text-[9px]">
+                            <span className="text-gray-500">Rasio Semen</span>
+                            <span className="font-mono font-bold text-gray-800">{binderRatio}%</span>
+                        </div>
+                        <div className="flex justify-between text-[9px]">
+                            <span className="text-gray-500">Dimensi SNI</span>
+                            <span className="font-mono font-bold text-gray-800">390×190×100 mm</span>
+                        </div>
+                        <div className="flex justify-between text-[9px]">
+                            <span className="text-gray-500">Output Harian</span>
+                            <span className="font-mono font-bold text-gray-800">
+                                {massBalanceResult
+                                    ? `${massBalanceResult.dailyProductOutput.toFixed(1)} ton`
+                                    : '— ton'}
+                            </span>
+                        </div>
+                    </div>
+                    {!massBalanceResult && (
+                        <div className="mt-2 rounded-md bg-amber-50 border border-amber-200 px-2 py-1 text-[8px] text-amber-700 text-center">
+                            Jalankan simulasi untuk data lengkap
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Static Cross-Section label — top center */}
+            {showCrossSection && (
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+                    <div className="rounded-lg bg-gray-900/80 px-4 py-1.5 text-xs font-bold text-white border border-gray-500/40 backdrop-blur-sm whitespace-nowrap shadow-lg">
+                        🔬 Komposisi Internal Batako
+                    </div>
+                </div>
+            )}
 
             {/* 3D Canvas */}
             <Canvas
