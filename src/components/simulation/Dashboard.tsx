@@ -6,6 +6,7 @@ import { DEFAULT_TAILING, TAILING_TYPES } from "@/lib/simulation/constants";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { AreaChart, Area, BarChart, Bar, ReferenceLine } from 'recharts';
 import { ReactorScene } from "./ReactorScene";
+import { GeopolymerBrickScene } from "./GeopolymerBrickScene";
 import { ResearchTab } from "./ResearchTab";
 
 const formatRp = (value: number): string => {
@@ -16,7 +17,7 @@ const formatRp = (value: number): string => {
 };
 
 export function Dashboard() {
-    const [activeTab, setActiveTab] = useState<'visual' | 'results' | 'economy' | 'research'>('results');
+    const [activeTab, setActiveTab] = useState<'visual' | 'brick' | 'results' | 'economy' | 'research'>('results');
     const { massBalanceResult, economicResults, inputMass, tailingType } = useSimulationStore();
 
     const COLORS = ['#374151', '#6b7280', '#9ca3af', '#d1d5db', '#d97706', '#0e7490'];
@@ -62,6 +63,12 @@ export function Dashboard() {
                     className={`whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-colors lg:px-6 lg:py-4 ${activeTab === 'visual' ? 'border-gray-800 text-gray-800' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
                 >
                     Visualisasi Pabrik
+                </button>
+                <button
+                    onClick={() => setActiveTab('brick')}
+                    className={`whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-colors lg:px-6 lg:py-4 ${activeTab === 'brick' ? 'border-amber-700 text-amber-700' : 'border-transparent text-gray-500 hover:text-amber-600'}`}
+                >
+                    🧱 Visualisasi Batako
                 </button>
                 <button
                     onClick={() => setActiveTab('results')}
@@ -464,6 +471,13 @@ export function Dashboard() {
                 {activeTab === 'visual' && (
                     <div className="h-full w-full rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                         <ReactorScene />
+                    </div>
+                )}
+
+                {/* ====== 3D BRICK VISUALIZATION TAB ====== */}
+                {activeTab === 'brick' && (
+                    <div className="h-full w-full rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <GeopolymerBrickScene />
                     </div>
                 )}
 

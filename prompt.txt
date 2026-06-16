@@ -1,0 +1,5 @@
+cek github, jika nyambung, tambahakn fitur ini di tab baru di simulasi :
+- fitur 3d untuk batako geopolimer,
+
+
+catatan jangan menghilangkan fitur 3d yang pabrik, buat di tab baru terpisah jangan sama
